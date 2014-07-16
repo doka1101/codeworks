@@ -1,0 +1,190 @@
+﻿<!-- 
+- Sample webpage that populates a brief profile of myself and 2011-2012 season
+  stats of some Toronto Raptors players.  
+- Programming Languages Used: 
+  - html: front end
+  - jquery: display drop down list, display the information, and even handling.
+  - javascript: sort the raptors statistics
+-->
+     
+<html>
+	<head>
+		<title>Sample jQuery Page</title>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
+		</script>
+		<script type="text/javascript">
+			
+			$(document).ready(function (){
+			
+				//The main menu has two options: "Dongsoo's Info" and "Toronto Raptors Stats"
+				$('#mainMenu').change(function () {
+				
+					//Display when the webpage is first launch, only the drop down list will display.
+					if ($('select#mainMenu').val() == "choose") {
+						$("select#profileMenu").hide();
+						$("#contentArea").hide();
+						$("#statsArea").hide();
+						$("select#statMenu").hide();
+				
+					//If "Dongsoo's Info" is selected, hide all the information about "Toronto Raptors Stats"
+					} else if ($('select#mainMenu').val() == "myProfile" ) {
+						if ($('select#profileMenu').val() == "bio"){
+							$('select#profileMenu').val("info");
+						}
+						$("select#profileMenu").show();
+						$("#statsArea").hide();
+						$("select#statMenu").hide();
+					
+					//If "Toronto Raptors Stats" is selected, hide all the information about "Dongsoo's Info"
+					} else { 
+						if ($('select#statMenu').val() != "sOption"){
+							$('select#statMenu').val("sOption");
+						}
+						$("select#profileMenu").hide();
+						$("#contentArea").hide();
+						$("select#statMenu").show();												
+					}
+					
+				});
+				
+				//If "Dongsoo's Info" option is selected, it will populate another drop down 
+				//list with one option: "Brief Profile".
+			    //If "Brief Profile" is selected, the page will show my brief profile.
+				$('#profileMenu').change(function () {
+										
+					if ($('select#profileMenu').val() == "bio" ) {
+						var dsProfile = '<p id=\'aboutDS\'> Name: Dongsoo Kang <br /> \
+				            Major: Applied Mathematics (Hons. BA) <br /> \
+							Years of Study: 3 (transfer student from University of Toronto) <br /> \
+							GPA: 7 / 9 <br /> \
+							Courses taking this year:';
+					
+						var courseList = '<ul><li>MATH 2030 - Elementary Probability</li> \
+					                   <li>MATH 2041 - Symbolic Computation Laboratory I </li> \
+									   <li>MATH 2131 - Introduction to Statistics II </li> \
+									   <li>MATH 2200 - Extended Problems, Conjectures, and Proofs </li> \
+									   <li>MATH 3170 - Operations Resarch I </li> \
+									   <li>MATH 3260 - Introduction to Graph Theory </li> \
+									   <li>MATH 3300 - Regression Analysis </li></ul>';
+				    
+						dsProfile += courseList;
+						dsProfile += 'Other degree(s): BSc. Computer Science - University of Toronto (2007) <br /> \
+							Programming language: Java, HTML, CSS, PHP, SQL, javascript, jQuery  <br/> \
+							Interest: Operations Research, Stats, Sports Analytics </p>';
+						$("#contentArea").show();
+						$("#contentArea").html(dsProfile);
+					} else {
+						$("#contentArea").hide();
+					}
+				});
+				
+				//If "Toronto Raptors Stats" option is selected, it will populate another drop down 
+				//list with four options.
+			    //The options are: "Show 2011-2012 Stats", "Sort by Points Per Game", "Sort by Rebounds Per Game",
+				//"Sort by Assists Per Game".
+				$("select#statMenu").change (function () {
+					
+					//Toronto Raptors players' data.
+					var playerArray = [['Andrea Bargnani', 19.5, 5.5, 2.0], ['Amir Johnson', 7.1, 6.4, 1.2], 
+										   ['Linus Kleiza', 9.7, 4.1, 0.9], ['Jose Calderon', 10.5, 3.0, 8.8], 
+										   ['DeMar DeRozan', 16.7, 3.3, 2.4]];
+										   
+					var resultTable = constructTable($("select#statMenu").val(),playerArray);
+					$("#statsArea").show();
+					$("#statsArea").html(resultTable);
+				});
+				
+				
+			});
+			
+			//Function that takes the option value and player data array as arguments and returns 
+			//a html table that will be displayed.
+			function constructTable(opt, arr) {
+				
+				var resultTbl = '<br /><br /><table border = \'1\'> <tr> <th> Players </th> \
+						                  <th> Points Per Game </th> <th> Rebounds Per Game </th> \
+						                  <th> Assists Per Game </th></tr>';
+				
+				var arr2 = new Array();
+				
+				//"Show 2011-2012 Stats" is selected, hence sorting is not required"
+				if (opt == "default") {
+					arr2 = arr;
+					
+				//"Sort by Points Per Game"
+				} else if (opt == "ppg") {
+					arr2 = sortTable(arr, 1);
+				
+				//"Sort by Rebounds Per Game"
+				} else if (opt == "rpg") {
+					arr2 = sortTable(arr, 2);
+					
+				//"Sort by Assists Per Game"
+				} else {
+					arr2 = sortTable(arr, 3);
+				}
+				
+				for (i=0; i < arr2.length; i++){
+							resultTbl = resultTbl + '<tr><td>' + arr[i][0] + '</td><td>'  
+									+ arr[i][1] + '</td><td>' + arr[i][2] + '</td><td>' 
+									+ arr[i][3] + '</td></tr>';
+							
+				}				
+				resultTbl += "</table>";
+				return resultTbl;
+			}
+			
+			/*
+			* Function sorts the player data array based on the sortOpt arugment.
+			* if sortOpt == 1, then it sorts by Points Per Game.
+			*    sortOpt == 2, then it sorts by Rebounds Per Game.
+			*    sortOpt == 3, then it sorts by Assists Per Game.
+			* Returns the sorted array.
+			*/
+			function sortTable(arr, sortOpt){
+				for (i = 1; i < arr.length; i++){
+					var j = i;
+					var tempArr = arr[i];
+					var tempVal = arr[i][sortOpt];
+					while ((j > 0) && (arr[j-1][sortOpt] < tempVal)) {
+						arr[j] = arr[j-1];
+						j--;
+					}
+					arr[j] = tempArr;
+				}
+				return arr;
+			}
+		
+		</script>
+	</head>
+	<body>
+		<h1> Sample jQuery Page </h1>
+		<div id="menuSection">
+			<br/>
+			<select id="mainMenu">
+				<option selected="selected" value="choose">Please choose</option>
+				<option value="myProfile">Dongsoo's Info</option>
+				<option value="raptors">Toronto Raptors Stats</option>
+			</select>
+			
+			<select id="profileMenu" style="display:none">
+				<option selected="selected" value="info">Choose options</option>
+				<option value="bio">Brief Profile</option>
+			</select>
+			
+			<select id="statMenu" style="display:none">
+					<option selected="selected" value="sOption">Choose options</option>
+					<option value="default">Show 2011-2012 Stats</option>
+					<option value="ppg">Sort by Points Per Game</option>
+					<option value="rpg">Sort by Rebounds Per Game</option>
+					<option value="apg">Sort by Assits Per Game</option>
+			</select>
+		</div>
+		<div id="contentArea" style="display:none">
+			<br/><br/>
+		</div>
+		<div id="statsArea" style="display:none">
+		
+		</div>
+	</body>
+</html>
