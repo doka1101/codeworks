@@ -3,13 +3,14 @@ import numpy as np
 
 
 def mapper(movie_ratings):
-    result_lst = []
-    result_lst.append((movie_ratings[0], movie_ratings[1]))
+    result_lst = [(movie_ratings[0], movie_ratings[1])]
     return result_lst
+
 
 def reducer(movie_rating_info):
     movie_title, ratings = movie_rating_info
-    return (movie_title, np.mean(ratings))
+    return movie_title, np.mean(ratings)
+
 
 def convert_str_to_dict(line):
     """
@@ -25,8 +26,14 @@ def convert_str_to_dict(line):
 
     return line_dict
 
-def join_dataset(input_file1, input_file2):
 
+def get_movie_title_and_rating(input_file1, input_file2):
+    """
+    Function joins movie and rating dataset on id key. Then retrieves the movie title and rating.
+    :param input_file1: movie or rating data
+    :param input_file2: if input_file1 = movie then param is rating and vice versa
+    :return: list of tuples. Tuples contain (movie_title, rating)
+    """
     file1_contents = [convert_str_to_dict(x.strip()) for x in open(input_file1).readlines()
                       if len(x) > 0]
     file2_contents = [convert_str_to_dict(x.strip()) for x in open(input_file2).readlines()
@@ -54,13 +61,14 @@ def join_dataset(input_file1, input_file2):
 
     return movie_rating_lst
 
+
 if __name__ == '__main__':
     import sys
 
     input_file1 = sys.argv[1]
     input_file2 = sys.argv[2]
 
-    movie_rating_lst = join_dataset(input_file1, input_file2)
+    movie_rating_lst = get_movie_title_and_rating(input_file1, input_file2)
     mapper_reducer = MyMREngine(mapper, reducer)
     avg_movie_ratings = mapper_reducer(movie_rating_lst)
 

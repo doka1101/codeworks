@@ -1,8 +1,8 @@
 from mrjob.job import MRJob
 
-class MRAvgMovieRating(MRJob):
 
-    def convert_str_to_dict(self,line):
+class MRAvgMovieRating(MRJob):
+    def convert_str_to_dict(self, line):
         """
         Function converts input string to dictionary object. Assumes line has a dictionary like
         structure.
@@ -12,7 +12,8 @@ class MRAvgMovieRating(MRJob):
         contents = line[1:-1].strip()  # strip off leading { and trailing }
         items = contents.split(',')  # each individual item looks like key:value
         pairs = [item.split(':', 1) for item in items]  # ("key","value"), both strings
-        line_dict = dict((k.strip(), eval(v)) for (k, v) in pairs)  # evaluate values but not strings
+        line_dict = dict(
+            (k.strip(), eval(v)) for (k, v) in pairs)  # evaluate values but not strings
 
         return line_dict
 
@@ -20,22 +21,19 @@ class MRAvgMovieRating(MRJob):
         line_dict = self.convert_str_to_dict(line)
 
         rating = 0.0
-        id = 0
         name = ""
 
         # grab id of the movie, and corresponding rating(s)
         if "rating" in line_dict.keys():
-             id = line_dict["movie_id"]
-             rating = line_dict["rating"]
+            m_id = line_dict["movie_id"]
+            rating = line_dict["rating"]
+        else:  # grab id of the movie, and corresponding title
+            m_id = line_dict["id"]
+            name = line_dict["name"]
 
-        # grab id of the movie, and corresponding title
-        if "name" in  line_dict.keys():
-             id = line_dict["id"]
-             name = line_dict["name"]
+        yield m_id, (name, rating)
 
-        yield id, (name, rating)
-
-    def reducer(self, id, val):
+    def reducer(self, m_id, val):
         movie_name = ''
         num_elements = 0
         total_score = 0.0
@@ -52,4 +50,3 @@ class MRAvgMovieRating(MRJob):
 
 if __name__ == '__main__':
     MRAvgMovieRating.run()
-

@@ -2,10 +2,9 @@ import multiprocessing
 import itertools
 import collections
 
+
 class MyMREngine():
-
     def __init__(self, map_func, reduce_func, num_workers=None):
-
         """
         map_func
 
