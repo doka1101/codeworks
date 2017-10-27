@@ -14,3 +14,10 @@ Coding Assignment
 2. avg_move_rating_*.py: takes exactly two input files - movie and rating (order of the files does not matter).
 3. movie file has the following keys: id & name.
 4. rating file has the following keys: user_id, movie_id & rating.
+
+### To Run Code:
+
+```
+python word_counter.py <input file>
+python avg_movie_rating_*.py <input file1> <input file2>
+```
