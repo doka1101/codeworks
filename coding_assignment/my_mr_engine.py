@@ -38,17 +38,14 @@ class MyMREngine():
             partitioned_data[key].append(value)
         return partitioned_data.items()
 
-    def __call__(self, inputs, chunksize=1):
+    def __call__(self, inputs):
         """Process the inputs through the map and reduce functions given.
 
         inputs
           An iterable containing the input data to be processed.
-
-        chunksize=1
-          The portion of the input data to hand to each worker.  This
-          can be used to tune performance during the mapping phase.
         """
-        map_responses = self.pool.map(self.map_func, inputs, chunksize=chunksize)
+
+        map_responses = self.pool.map(self.map_func, inputs)
         partitioned_data = self.partition(itertools.chain(*map_responses))
         reduced_values = self.pool.map(self.reduce_func, partitioned_data)
         return reduced_values
